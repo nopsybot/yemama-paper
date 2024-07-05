@@ -1,0 +1,6 @@
+*
+!.gitignore
+!results.qmd
+!appendix/appendix.qmd
+*_files/*
+*_cache/*

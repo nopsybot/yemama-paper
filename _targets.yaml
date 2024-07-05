@@ -1,0 +1,11 @@
+preproc:
+  path: pipelines/preproc
+  script: pipelines/preproc/_targets.R
+  store: pipelines/preproc/_targets
+  package_script: pipelines/preproc/_targets_packages.R
+  
+analysis:
+  path: pipelines/analysis
+  script: pipelines/analysis/_targets.R
+  store: pipelines/analysis/_targets
+  package_script: pipelines/analysis/_targets_packages.R

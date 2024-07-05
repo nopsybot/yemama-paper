@@ -1,1 +1,5 @@
 source("renv/activate.R")
+options(datatable.print.class = TRUE)
+options(datatable.print.trunc.cols = TRUE)
+options(datatable.print.topn = 3)
+options(datatable.print.nrows = 6)
