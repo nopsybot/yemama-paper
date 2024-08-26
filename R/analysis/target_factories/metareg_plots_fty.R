@@ -41,6 +41,21 @@ metareg_plots_fty <- function() {
           width = 15, height = 20,units = "cm", dpi = 300, scale = 1.1
         )
     ),
+    ALLregsum_plot__unflu1_JMIR = ALLreg_sum_l__unflu1 %>% 
+      patchplot_all_metaregs(
+        custom.asin.cartxlims = c(-.25,.2),
+        custom.asin.breaks = c(-.2,0,.2),
+        ffont = "Times New Roman"
+      ),
+    tar_file(
+      ALLregsum_plot__unflu1_JMIR_file,
+      here::here("pipelines/analysis/figs/metaregs/all_metaregs_JMIR.png") %T>% 
+        ggsave(
+          ALLregsum_plot__unflu1_JMIR, device = ragg::agg_png,
+          width = 900, height = 1200,units = "px", dpi = 300, scale = 1.8,
+          bitsize = 16
+        )
+    ),
     
     ALLregsum_plot__unflu1_uncut = patchplot_all_metaregs(ALLreg_sum_l__unflu1_uncut),
     tar_file(

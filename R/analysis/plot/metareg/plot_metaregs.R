@@ -1,6 +1,7 @@
 plot_metaregs <- function(
     data = tar_read(ALLreg_sum_l)[feature=="sample" & outcome=="compliance",],
-    .drop_missing_mods = TRUE
+    .drop_missing_mods = TRUE,
+    ffont = "Arial"
 ){ 
   
   p <- data %>% 
@@ -25,14 +26,14 @@ plot_metaregs <- function(
       ) +
     scale_shape_manual(
       name = "",
-      values = c("p < .005" = 23,"p < .05" = 24, "p ≥ .05" = 21),
+      values = c("*P*<.005" = 23,"*P*<.05" = 24, "*P*≥.05" = 21),
       drop = FALSE
     ) +
     scale_fill_manual(
       name = "",
       #COLOR: values = c("p < .005" = "#6ACEEB","p < .05" = "#F0C40F", "p ≥ .05" = "white"),
       # BLACK-WHITE: 
-      values = c("p < .005" = "white","p < .05" = "white", "p ≥ .05" = "white"),
+      values = c("*P*<.005" = "white","*P*<.05" = "white", "*P*≥.05" = "white"),
       drop = FALSE
     ) +
     guides(x = guide_axis(cap = "both"), y = guide_axis(cap = "both")) +
@@ -48,14 +49,15 @@ plot_metaregs <- function(
       )
     ) +
     
-    papaja::theme_apa(base_size = 10) +
+    papaja::theme_apa(base_size = 10, base_family = ffont) +
     theme(
       axis.text.y = ggtext::element_markdown(),
       legend.position = "bottom",
       legend.text.position = "right",
       legend.direction = "horizontal",
       legend.margin = margin(0.1,0.1,0.1,0.1,"lines"),
-      legend.key.spacing.x = unit(2,"lines"),
+      legend.key.spacing.x = unit(0.5,"lines"),
+      legend.text = ggtext::element_markdown(),
       # plot.margin = grid::unit(c(0,0,0,0),"cm"),
       plot.caption.position = "plot",
       plot.caption = ggtext::element_textbox(

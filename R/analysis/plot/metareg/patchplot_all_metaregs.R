@@ -5,7 +5,8 @@ patchplot_all_metaregs <- function(
     cap.title = "Metaregression estimates.<br>",
     cap.note = "",
     custom.asin.cartxlims = NULL,
-    custom.asin.breaks = NULL
+    custom.asin.breaks = NULL,
+    ffont = "Arial"
 ) {
   
   data %>% 
@@ -41,10 +42,10 @@ patchplot_all_metaregs <- function(
         ),
       sig = nif(
         # pval < 0.001, "p < .001",
-        pval < 0.005, "p < .005",
-        pval < 0.05, "p < .05",
-        default = "p ≥ .05"
-      ) %>% factor(levels = c("p < .005","p < .05","p ≥ .05")),
+        pval < 0.005, "*P*<.005",
+        pval < 0.05, "*P*<.05",
+        default = "*P*≥.05"
+      ) %>% factor(levels = c("*P*<.005","*P*<.05","*P*≥.05")),
       # abbr_key = abbr_key %>% 
       #   rrapply(f = \(x) str_subset(x,"^no = ",negate = TRUE)),
       # NOTE: Order of features is defined here
@@ -56,7 +57,9 @@ patchplot_all_metaregs <- function(
     lapply(\(l) split(l,by = "outcome",sort = TRUE)) %>% 
     purrr::flatten() %>% 
     # Apply core plotting function
-    purrr::map(\(d) plot_metaregs(d,.drop_missing_mods=FALSE)) %>% 
+    purrr::map(
+      \(d) plot_metaregs(d, .drop_missing_mods=FALSE, ffont = ffont)
+    ) %>% 
     # Dynamic labelling and generic theme elements
     purrr::map2(names(.),\(p,t) p+labs(x=t)) %>% 
     purrr::map(

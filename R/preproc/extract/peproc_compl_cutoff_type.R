@@ -27,6 +27,7 @@ preproc_compl_cutoff_type <- function(extracts) {
         default = NA_character_
       ) %>% 
         factor( levels = c("raw compliance","inflated compliance") ) %>% 
+        setLabels("Inflated compliance rate"),
         setLabels(attrn="feature","outcome"),
       
       # FIXME!!! results in NULL or NA check here

@@ -5,7 +5,7 @@ plot_rma_caterpillar <- function(
     xscale_trans_fun = metafor::transf.arcsin,
     xlab_trans_fun = metafor::transf.iarcsin
 ) {
-  function(){
+  function(show_y = TRUE){
     forest.rma(res,
                xlab = yi_var_lab,
                xlim = c(-0,1) %>% xscale_trans_fun() %>% 
@@ -28,10 +28,13 @@ plot_rma_caterpillar <- function(
     
     ### add summary polygon at bottom and text
     addpoly(res, mlab="", cex=3)
-    text(
-      res$b[1], res$k, 
-      label = paste0("γ =",round(xlab_trans_fun(res$b[1]),2)), 
-      pos=4, offset=0.5, cex=1
-    )
+    
+    if(show_y){
+      text(
+        res$b[1], res$k, 
+        label = paste0("γ =",round(xlab_trans_fun(res$b[1]),2)), 
+        pos=4, offset=0.5, cex=1
+      )
+    }
   }
 }

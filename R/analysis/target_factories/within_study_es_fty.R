@@ -16,7 +16,7 @@ within_study_es_fty <- function() {
     #   measure = "GEN", method="REML"
     # ),
     
-    pooled_gender_diff_forest = function(){
+    pooled_gender_diff_forest = function(ffont = "Arial"){
       res <- pooled_gender_diff;
       metafor::forest.rma(
         res,
@@ -30,15 +30,29 @@ within_study_es_fty <- function() {
         xlab = "Hedges' g",
         xlim = c(-3.8,3.8),
         at = c(-1,0,1,2),
-        shade = TRUE
+        shade = TRUE,
+        fonts = ffont
       )
-      text(c(-2.9,-1.9,-1.3), res$k+2,labels = c("(k=25)","Group","N"), font=2)
-      text(-3.8, (1:res$k)-0.1,labels = rev(res$data$authyear), font=1,pos = 4)
+      text(
+        x = c(-2.9,-1.9,-1.3), y = res$k+2,
+        labels = c("(k=25)","Group","N"),
+        family = ffont, 
+        font=2
+      )
+      text(
+        x = -3.8, y = (1:res$k)-0.1,
+        labels = rev(res$data$authyear),
+        family = ffont, 
+        font=1,
+        pos = 4
+      )
       text(
         x = c(0, 2.2), y = -2, 
         labels = c("Boys more compliant","Girls more compliant"), 
         col="grey20",
-        pos=c(2,2)#, offset=-0.5
+        pos=c(2,2), 
+        #offset=-0.5,
+        family = ffont
       )
     },
     
@@ -56,6 +70,21 @@ within_study_es_fty <- function() {
       x})()
     },
     
+    pooled_gender_diff_forest_jmir_file = {
+        "pipelines/analysis/figs/pooled/within/gender_diff_forest_JMIR.png" %>% 
+      (\(x) {ragg::agg_png(
+        x, pointsize = 6, res = 300, width = 1200, height = 1200, units = "px",
+        bitsize = 16
+      )
+      pooled_gender_diff_forest(ffont = "Times New Roman")
+      invisible(dev.off())
+      # re-crop image from undesired margin
+      magick::image_read(x) %>% 
+        magick::image_crop("1200x1050+0+120") %>% 
+        magick::image_write(path =x)
+      x})()
+    },
+    
     pooled_gender_diff_report_file = fs::path(
       here::here("pipelines/analysis/reports/pooled/gender_diff")
     ) %T>% yemama_pooled_reporter(pooled_gender_diff, dir = .),
@@ -69,7 +98,7 @@ within_study_es_fty <- function() {
     # ),
     
     # AGE ####
-    pooled_age_corr_forest = function(){
+    pooled_age_corr_forest = function(ffont = "Arial"){
       res <- pooled_age_corr
       metafor::forest.rma(
         res,
@@ -82,9 +111,17 @@ within_study_es_fty <- function() {
         xlab = "Fisher's z",
         mlab = "Random-Effects Model",
         xlim = c(-3.8,3.8),
-        shade = TRUE
+        shade = TRUE,
+        fonts = ffont
       )
-      text(c(-2.9,-1.3), res$k+2,labels = c("(k=12)","N"), cex=1, font=2)
+      text(
+        x = c(-2.9,-1.3), 
+        y = res$k+2,
+        labels = c("(k=14)","N"), 
+        cex=1, 
+        family = ffont,
+        font=2
+      )
     },
     
     pooled_age_corr_forest_file = {
@@ -101,6 +138,26 @@ within_study_es_fty <- function() {
       # re-crop image from undesired margin
       magick::image_read(x) %>% 
         magick::image_crop("1299x1400+0+140") %>% 
+        magick::image_write(path =x)
+      x})()
+    },
+    
+    pooled_age_corr_forest_JMIR_file = {
+      "pipelines/analysis/figs/pooled/within/age_corr_forest_JMIR.png" %>%
+      (\(x) {ragg::agg_png(
+        filename = x,
+        pointsize = 6,
+        res = 300,
+        
+        width = 1200,
+        height = 800,
+        units = "px"
+      )
+      pooled_age_corr_forest(ffont = "Times New Roman")
+      invisible(dev.off())
+      # re-crop image from undesired margin
+      magick::image_read(x) %>% 
+        magick::image_crop("1200x675+0+100") %>% 
         magick::image_write(path =x)
       x})()
     },

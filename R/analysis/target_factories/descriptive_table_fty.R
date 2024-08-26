@@ -17,14 +17,14 @@ descriptive_table_fty <- function() {
         ),
         sample_country1 = ffirst(sample_country1,na.rm = TRUE),
         retention_n = round(fsum(retention_n*(retention_rate_extr/100), na.rm = TRUE)), # %>% setLabels("Sample size"),
-        age = fmean(age,w = retention_n, na.rm = TRUE),
-        female.prc = fmean(female.prc,w = retention_n,na.rm = TRUE),
-        n_ema_days = fmean(n_ema_days,w = retention_n,na.rm=TRUE),
-        prompt_dfreq = fmean(prompt_dfreq,w = retention_n,na.rm=TRUE),
+        age = fmean(age,w = fcoalesce(retention_n,compl_sample_size,1L), na.rm = TRUE),
+        female.prc = fmean(female.prc,w = fcoalesce(retention_n,compl_sample_size,1L),na.rm = TRUE),
+        n_ema_days = fmax(n_ema_days, na.rm = TRUE),
+        prompt_dfreq = fmax(prompt_dfreq, na.rm=TRUE),
         random_signaling = fmax(random_signaling,na.rm = TRUE),
         item_n = fmax(item_n,na.rm = TRUE),
-        resp_dur_m_sec = fmean(resp_dur_m_sec,retention_n, na.rm = TRUE),
-        inc_val_pot_max.usd = fmean(inc_val_pot_max.usd,w = retention_n, na.rm = TRUE),
+        resp_dur_m_sec = fmean(resp_dur_m_sec,w = fcoalesce(retention_n,compl_sample_size,1L), na.rm = TRUE),
+        inc_val_pot_max.usd = fmax(inc_val_pot_max.usd, na.rm = TRUE),
         acceptance_rate_extr = fmean(acceptance_rate_extr,w = acceptance_n, na.rm = TRUE),
         retention_rate_extr = fmean(retention_rate_extr,w = retention_n, na.rm = TRUE),
         compl_m = fmean(compl_m*100,w = compl_sample_size, na.rm = TRUE)
@@ -34,7 +34,7 @@ descriptive_table_fty <- function() {
     bins_plan = list(
       in_breaks = list(
         first_pub = seq(2005,2020,by = 5),
-        retention_n = c(50,100,300,600),
+        retention_n = c(50,100,600),
         age = c(5,10,15),
         female.prc = c(25,50,75),
         n_ema_days = c(1,8,15,29,60),
@@ -44,6 +44,28 @@ descriptive_table_fty <- function() {
         acceptance_rate_extr = c(40,60,80,90),
         retention_rate_extr = c(40,60,80,90),
         compl_m = c(40,60,80,90)
+      ),
+      out_names = .c(
+        first_pub,sample_size,age,gender,n_days,p_day,item_n,mon_val,
+        accept,retent,compl
+      ) %>% paste0(".bins")
+    ) %>% 
+      qDT(keep.attr = FALSE) %>% 
+      mtt(var = names(in_breaks)),
+    
+    bins_plan_short = list(
+      in_breaks = list(
+        first_pub = c(2010,2020),
+        retention_n = c(50,100),
+        age = c(13),
+        female.prc = c(50),
+        n_ema_days = c(1,10,29),
+        prompt_dfreq = c(5),
+        item_n = c(20,40),
+        inc_val_pot_max.usd = c(100),
+        acceptance_rate_extr = c(40,80),
+        retention_rate_extr = c(40,80),
+        compl_m = c(40,80)
       ),
       out_names = .c(
         first_pub,sample_size,age,gender,n_days,p_day,item_n,mon_val,
@@ -63,8 +85,22 @@ descriptive_table_fty <- function() {
           fselect(N_group = N,prc_group = prc)
       ),
     
+    study_grp_bins_desc_short = add_vars(
+        study_dat %>% 
+          desc_bins_cats(bins_plan_short) %>% 
+          frename(N_study = N,prc_study=prc),
+        dat_imputed %>% 
+          mtt(compl_m = compl_m*100) %>% 
+          desc_bins_cats(bins_plan_short) %>% 
+          fselect(N_group = N,prc_group = prc)
+      ),
+    
     binned_desc_gt = gt_style_binned_desc(
       study_grp_bins_desc,
+      N = nrow(dat_imputed)
+    ),
+    binned_desc_short_gt = gt_style_binned_desc(
+      study_grp_bins_desc_short,
       N = nrow(dat_imputed)
     ),
     
@@ -76,6 +112,13 @@ descriptive_table_fty <- function() {
           "pipelines/analysis/tables/table_1",paste0("binned_desc_gt.",formats)
         ) %>% as.character() %T>% 
           gt::gtsave(data = binned_desc_gt,filename = .)
+        ),
+      tar_file(
+        binned_desc_gt_short_file,
+        fs::path(
+          "pipelines/analysis/tables/table_1",paste0("binned_desc_short_gt.",formats)
+        ) %>% as.character() %T>% 
+          gt::gtsave(data = binned_desc_short_gt,filename = .)
         )
     ),
     
